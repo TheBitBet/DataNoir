@@ -3,7 +3,7 @@
 Fight against enshittifcation. DataNoir is a modular Python application for financial data visualization with **smart CSV import** that works with any column format. 
 
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 csv_visualizer/
@@ -16,7 +16,7 @@ csv_visualizer/
 └── README.md                  # This file
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### **main.py** - GUI Layer
 - **Responsibility**: User interface, file dialogs, logging, event handling
@@ -68,17 +68,8 @@ GUI lets you:
 - See all CSV columns with data previews
 - Map required fields (Date, Price, Volume)
 - Map optional fields (Open, High, Low, Change)
-- Get smart suggestions for each field
 - Preview your mapped data before confirming
 - Save your mapping as a preset for future use
-
-### **3. Preset Configurations**
-Built-in presets for common sources:
-- Yahoo Finance
-- Investing.com
-- Google Finance
-- Generic
-
 
 ### **Saved Configurations**
 Custom presets are saved in `csv_configs.json`:
@@ -93,7 +84,7 @@ Custom presets are saved in `csv_configs.json`:
 ```
 
 
-## 🔄 Data Flow
+## Data Flow
 
 ```
 User Action (Upload CSV)
@@ -113,44 +104,11 @@ chart_engine.py (Create Chart using data_processor)
 Display Chart to User
 ```
 
-## 🎯 Key Design Principles
-
-1. **Separation of Concerns**: Each module has a single, clear responsibility
-2. **Loose Coupling**: Modules communicate through well-defined interfaces
-3. **High Cohesion**: Related functionality is grouped together
-4. **Dependency Injection**: ChartEngine receives DataProcessor instance
-5. **Reusability**: Data processor and chart engine can be used independently
-
-## 🚀 Usage
+##  Usage
 
 ### Running the Application
 ```python
 python main.py
-```
-
-### Using Modules Independently
-
-**Data Processing Only:**
-```python
-from data_processor import DataProcessor
-
-processor = DataProcessor()
-success, message, stats = processor.load_csv("data.csv")
-if success:
-    ma7 = processor.calculate_moving_average(7)
-    rsi = processor.calculate_rsi()
-```
-
-**Visualization Only:**
-```python
-from data_processor import DataProcessor
-from chart_engine import ChartEngine
-
-processor = DataProcessor()
-processor.load_csv("data.csv")
-
-engine = ChartEngine(processor)
-engine.create_3d_chart(scale_type="log", color_by="price")
 ```
 
 ## 📊 Available Visualizations
@@ -164,7 +122,7 @@ engine.create_3d_chart(scale_type="log", color_by="price")
 7. **MACD** - 
 8. **Seasonality** -
 
-## 🔧 Technical Indicators
+##  Technical Indicators
 
 ### Implemented:
 - Simple Moving Average (SMA)
@@ -177,7 +135,7 @@ engine.create_3d_chart(scale_type="log", color_by="price")
 ### Easy to Add:
 Thanks to the modular design, new indicators can be added to `data_processor.py` as methods, then visualized in `chart_engine.py`.
 
-## 📦 Dependencies
+##  Dependencies
 
 ```
 pandas>=1.3.0
@@ -190,7 +148,7 @@ Install with:
 pip install pandas matplotlib numpy
 ```
 
-## 🎨 Extending the Application
+##  Extending the Application
 
 ### Adding a New Indicator:
 
@@ -217,21 +175,13 @@ btn = tk.Button(text="MACD", command=self.show_macd)
 
 Simply add a new method to `ChartEngine` and wire it to a button in the GUI!
 
-## 🧪 Testing Strategy
 
-With this modular structure, you can test each layer independently:
-
-- **Data Layer**: Test calculations with known input/output
-- **Chart Layer**: Test chart generation with mock data
-- **GUI Layer**: Test UI interactions and state management
-
-## 📝 Notes
-
-- 3d Volume can be scaled (linear/log/normalized) for better visualization
+##  Notes
 - Charts support various color schemes based on price/volume/date
 - All technical indicators use standard financial formulas
+- 3d section need further refinement
 
-## 🤝 Contributing
+##  Contributing
 
 When adding new features:
 1. Put calculations in `data_processor.py`
