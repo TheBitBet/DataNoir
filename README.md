@@ -162,12 +162,12 @@ Display Chart to User
 
 ### **Method Comparison**
 
-| Method | Best For | Speed | Accuracy | Confidence Intervals |
+| Method | Best For | Speed  | Confidence Intervals |
 |--------|----------|-------|----------|---------------------|
-| **Linear Trend** | Short-term, clear trends | ⚡⚡⚡ | ⭐⭐ | ✅ |
-| **Moving Average** | Trading signals | ⚡⚡⚡ | ⭐⭐⭐ | ❌ |
-| **ARIMA** | Statistical analysis | ⚡⚡ | ⭐⭐⭐⭐ | ✅ |
-| **Prophet** | Long-term, seasonality | ⚡ | ⭐⭐⭐⭐⭐ | ✅ |
+| **Linear Trend** | Short-term, clear trends | ⚡⚡⚡  | ✅ |
+| **Moving Average** | Trading signals | ⚡⚡⚡  | ❌ |
+| **ARIMA** | Statistical analysis | ⚡⚡ | ✅ |
+| **Prophet** | Long-term, seasonality | ⚡  | ✅ |
 
 ---
 
