@@ -61,17 +61,21 @@ class CSVVisualizerGUI:
                                    fg="gray", bg="#f5f5f5", wraplength=400)
         self.file_label.pack(side=tk.LEFT, padx=5, pady=15)
         
-        upload_btn = tk.Button(file_frame, text="📤 Upload CSV", 
+        upload_btn = tk.Button(file_frame, text=" Upload CSV", 
                               command=self.upload_file,
                               bg="#4CAF50", fg="white", 
                               font=("Arial", 10, "bold"),
                               padx=15, pady=8, cursor="hand2")
         upload_btn.pack(side=tk.RIGHT, padx=10, pady=10)
         
-        # Create notebook (tabbed interface) with fixed height
-        notebook_frame = tk.Frame(self.root, height=350)  # Fixed height container
-        notebook_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
-        notebook_frame.pack_propagate(False)  # Don't shrink
+        # Create PanedWindow for resizable split between tabs and log
+        paned_window = tk.PanedWindow(self.root, orient=tk.VERTICAL, 
+                                     sashrelief=tk.RAISED, sashwidth=4)
+        paned_window.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+        
+        # Top pane: Notebook (tabs)
+        notebook_frame = tk.Frame(paned_window, bg="white")
+        paned_window.add(notebook_frame, minsize=300)  # Minimum 300px for tabs
         
         self.notebook = ttk.Notebook(notebook_frame)
         self.notebook.pack(fill=tk.BOTH, expand=True)
@@ -80,32 +84,36 @@ class CSVVisualizerGUI:
         self._create_basic_charts_tab()
         self._create_technical_indicators_tab()
         self._create_advanced_analysis_tab()
+        self._create_forecasting_tab()
         self._create_settings_tab()
         
-        # Log frame
-        log_frame = tk.LabelFrame(self.root, text="📋 Activity Log", 
-                                 font=("Arial", 10, "bold"))
-        log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+        # Bottom pane: Log frame (resizable!)
+        log_container = tk.Frame(paned_window, bg="white")
+        paned_window.add(log_container, minsize=100)  # Minimum 100px for log
         
-        # Scrolled text for logging
+        log_frame = tk.LabelFrame(log_container, text=" Activity Log (Drag divider above to resize)", 
+                                 font=("Arial", 10, "bold"))
+        log_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Scrolled text for logging (no fixed height - resizable!)
         self.log_text = scrolledtext.ScrolledText(log_frame, 
-                                                  width=80, 
-                                                  height=6,  # Reduced from 8 to 6
-                                                  font=("Courier", 9),
-                                                  bg="#f5f5f5")
+                                                  width=80,
+                                                  font=("Arial", 9),
+                                                  bg="#f5f5f5",
+                                                  wrap=tk.WORD)
         self.log_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
         # Bottom button frame
         bottom_frame = tk.Frame(self.root)
         bottom_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
         
-        tk.Button(bottom_frame, text="🗑️ Clear Log", 
+        tk.Button(bottom_frame, text="️ Clear Log", 
                  command=self.clear_log,
                  bg="#FF9800", fg="white",
                  font=("Arial", 9, "bold"),
                  padx=12, pady=5).pack(side=tk.LEFT, padx=3)
         
-        tk.Button(bottom_frame, text="💾 Export Log", 
+        tk.Button(bottom_frame, text=" Export Log", 
                  command=self.export_log,
                  bg="#9C27B0", fg="white",
                  font=("Arial", 9, "bold"),
@@ -119,7 +127,7 @@ class CSVVisualizerGUI:
         
         # Initial log message
         self.log("🚀 Application started. Please upload a CSV file.")
-        self.log("📊 8 visualizations available across 3 categories!")
+        self.log("📊 16 visualizations available including 5 forecasting methods!") 
     
     def _create_basic_charts_tab(self):
         """Create Basic Charts tab"""
@@ -190,13 +198,11 @@ class CSVVisualizerGUI:
         btn = self._create_viz_button(row1, "📉 Moving Averages", 
                                       "7/30/90-day MA + Bollinger Bands",
                                       self.show_moving_averages, "#009688")
-        btn.pack(side=tk.LEFT, padx=5)
         self.viz_buttons.append(btn)
         
         btn = self._create_viz_button(row1, "📊 RSI Indicator", 
                                       "Relative Strength Index (overbought/oversold)",
                                       self.show_rsi, "#FF5722")
-        btn.pack(side=tk.LEFT, padx=5)
         self.viz_buttons.append(btn)
         
         # Row 2
@@ -206,13 +212,12 @@ class CSVVisualizerGUI:
         btn = self._create_viz_button(row2, "📉 MACD", 
                                       "Moving Average Convergence Divergence",
                                       self.show_macd, "#3F51B5")
-        btn.pack(side=tk.LEFT, padx=5)
         self.viz_buttons.append(btn)
     
     def _create_advanced_analysis_tab(self):
         """Create Advanced Analysis tab"""
         tab = tk.Frame(self.notebook, bg="white")
-        self.notebook.add(tab, text="  🔬 Advanced Analysis  ")
+        self.notebook.add(tab, text="   Advanced Analysis  ")
         
         # Description
         desc_frame = tk.Frame(tab, bg="#FFF3E0", relief=tk.RIDGE, bd=2)
@@ -230,22 +235,117 @@ class CSVVisualizerGUI:
         row1 = tk.Frame(button_container, bg="white")
         row1.pack(anchor=tk.CENTER, pady=5)
         
-        btn = self._create_viz_button(row1, "📅 Seasonality", 
+        btn = self._create_viz_button(row1, " Seasonality", 
                                       "Monthly/weekly patterns & trends",
                                       self.show_seasonality, "#00BCD4")
-        btn.pack(side=tk.LEFT, padx=5)
         self.viz_buttons.append(btn)
         
-        btn = self._create_viz_button(row1, "🔥 Correlation Heatmap", 
+        btn = self._create_viz_button(row1, " Correlation Heatmap", 
                                       "Price/Volume/Change correlations",
                                       self.show_heatmap, "#F44336")
-        btn.pack(side=tk.LEFT, padx=5)
+        self.viz_buttons.append(btn)
+        
+        # Row 2
+        row2 = tk.Frame(button_container, bg="white")
+        row2.pack(anchor=tk.CENTER, pady=5)
+        
+        btn = self._create_viz_button(row2, " Calendar Heatmap", 
+                                      "Daily returns calendar view",
+                                      self.show_calendar_heatmap, "#FF9800")
+        self.viz_buttons.append(btn)
+    
+    def _create_forecasting_tab(self):
+        """Create Forecasting tab with controls"""
+        tab = tk.Frame(self.notebook, bg="white")
+        self.notebook.add(tab, text="   Forecasting  ")
+        
+        # Description
+        desc_frame = tk.Frame(tab, bg="#E1F5FE", relief=tk.RIDGE, bd=2)
+        desc_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        tk.Label(desc_frame, 
+                text="AI-powered price forecasting with multiple methods and adjustable horizon",
+                font=("Arial", 9, "italic"), bg="#E1F5FE", fg="#01579B").pack(padx=10, pady=5)
+        
+        # Settings frame
+        settings_frame = tk.LabelFrame(tab, text="️ Forecast Settings", 
+                                      font=("Arial", 11, "bold"), bg="white", 
+                                      padx=15, pady=10)
+        settings_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        # Forecast horizon
+        horizon_frame = tk.Frame(settings_frame, bg="white")
+        horizon_frame.pack(fill=tk.X, pady=5)
+        
+        tk.Label(horizon_frame, text="Forecast Horizon:", 
+                font=("Arial", 10, "bold"), bg="white").pack(side=tk.LEFT, padx=5)
+        
+        self.forecast_days_var = tk.IntVar(value=30)
+        
+        for days, label in [(7, "1 Week"), (14, "2 Weeks"), (30, "1 Month"), 
+                           (60, "2 Months"), (90, "3 Months")]:
+            tk.Radiobutton(horizon_frame, text=label, variable=self.forecast_days_var,
+                          value=days, bg="white", font=("Arial", 9)).pack(side=tk.LEFT, padx=5)
+        
+        # Custom days
+        custom_frame = tk.Frame(settings_frame, bg="white")
+        custom_frame.pack(fill=tk.X, pady=5)
+        
+        tk.Label(custom_frame, text="Custom Days:", 
+                font=("Arial", 9), bg="white").pack(side=tk.LEFT, padx=5)
+        
+        self.custom_days_entry = tk.Entry(custom_frame, width=10, font=("Arial", 9))
+        self.custom_days_entry.pack(side=tk.LEFT, padx=5)
+        
+        tk.Button(custom_frame, text="Set Custom", 
+                 command=self._set_custom_forecast_days,
+                 bg="#2196F3", fg="white", font=("Arial", 8, "bold"),
+                 padx=10, pady=2).pack(side=tk.LEFT, padx=5)
+        
+        tk.Label(custom_frame, text="(1-180 days)", 
+                font=("Arial", 8), fg="gray", bg="white").pack(side=tk.LEFT, padx=5)
+        
+        # Buttons
+        button_container = tk.Frame(tab, bg="white")
+        button_container.pack(expand=True, fill=tk.BOTH, padx=20, pady=10)
+        
+        # Row 1 (3 buttons)
+        row1 = tk.Frame(button_container, bg="white")
+        row1.pack(anchor=tk.CENTER, pady=5)
+        
+        btn = self._create_viz_button(row1, " Price Forecast", 
+                                      "Multi-method price prediction",
+                                      self.show_price_forecast, "#9C27B0")
+        self.viz_buttons.append(btn)
+        
+        btn = self._create_viz_button(row1, " MA Forecast", 
+                                      "Moving Average projection",
+                                      self.show_ma_forecast, "#00BCD4")
+        self.viz_buttons.append(btn)
+        
+        btn = self._create_viz_button(row1, " ARIMA Forecast", 
+                                      "Statistical time series model",
+                                      self.show_arima_forecast, "#FF9800")
+        self.viz_buttons.append(btn)
+        
+        # Row 2 (2 buttons)
+        row2 = tk.Frame(button_container, bg="white")
+        row2.pack(anchor=tk.CENTER, pady=5)
+        
+        btn = self._create_viz_button(row2, " Prophet Forecast", 
+                                      "Facebook's ML forecasting",
+                                      self.show_prophet_forecast, "#4CAF50")
+        self.viz_buttons.append(btn)
+        
+        btn = self._create_viz_button(row2, " Compare All Methods", 
+                                      "Side-by-side comparison + consensus",
+                                      self.show_forecast_comparison, "#F44336")
         self.viz_buttons.append(btn)
     
     def _create_settings_tab(self):
         """Create Settings/Options tab"""
         tab = tk.Frame(self.notebook, bg="white")
-        self.notebook.add(tab, text="  ⚙️ 3D Settings  ")
+        self.notebook.add(tab, text="  ️ 3D Settings  ")
         
         # Description
         desc_frame = tk.Frame(tab, bg="#F3E5F5", relief=tk.RIDGE, bd=2)
@@ -322,28 +422,24 @@ class CSVVisualizerGUI:
     def _create_viz_button(self, parent, text, description, command, color):
         """Create a standardized visualization button with description"""
         frame = tk.Frame(parent, bg="white", relief=tk.RAISED, bd=1)
-        frame.pack(side=tk.LEFT, padx=5, pady=5)  # <-- PACK THE FRAME HERE
-
-        btn = tk.Button(
-            frame, text=text, command=command,
-            bg=color,
-            fg="gray20",                # text color when enabled (initially we'll override later)
-            disabledforeground="gray60",# text when disabled
-            activebackground=color,
-            activeforeground="white",   # hover/click, after enabling
-            font=("Arial", 10, "bold"),
-            padx=20, pady=15, width=22,
-            cursor="hand2",
-            state=tk.DISABLED
-        )
+        frame.pack(side=tk.LEFT, padx=5, pady=5)  # <-- THIS WAS MISSING!
+        
+        btn = tk.Button(frame, text=text, command=command,
+                       bg=color, 
+                       fg="gray20",                # text color initially
+                       disabledforeground="gray60",# text when disabled
+                       activebackground=color,
+                       activeforeground="white",   # hover/click
+                       font=("Arial", 10, "bold"),
+                       padx=20, pady=15, width=22,
+                       cursor="hand2", state=tk.DISABLED)
         btn.pack()
-
-        tk.Label(
-            frame, text=description, font=("Arial", 8),
-            fg="gray", bg="white", wraplength=200
-        ).pack(pady=(5, 10))
-
-        return btn    
+        
+        tk.Label(frame, text=description, font=("Arial", 8), 
+                fg="gray", bg="white", wraplength=200).pack(pady=(5, 10))
+        
+        return btn
+    
     def log(self, message: str):
         """Add a message to the log with timestamp"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -483,21 +579,11 @@ class CSVVisualizerGUI:
             self.update_status("Error loading CSV")
             self._enable_viz_buttons(False)
     
-    def _enable_viz_buttons(self, enable):
-        if enable:
-            for btn in self.viz_buttons:
-                btn.config(
-                    state=tk.NORMAL,
-                    fg="white",            # enabled text becomes white
-                    activeforeground="white"
-                )
-        else:
-            for btn in self.viz_buttons:
-                btn.config(
-                    state=tk.DISABLED,
-                    fg="gray20",           # reset if you care
-                    disabledforeground="gray60"
-                )
+    def _enable_viz_buttons(self, enabled: bool):
+        """Enable or disable all visualization buttons"""
+        state = tk.NORMAL if enabled else tk.DISABLED
+        for btn in self.viz_buttons:
+            btn.config(state=state)
     
     # Visualization methods - delegate to ChartEngine
     
@@ -554,6 +640,58 @@ class CSVVisualizerGUI:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to create MACD chart:\n{str(e)}")
     
+    def show_price_forecast(self):
+        """Show Price Forecast chart"""
+        try:
+            days = self.forecast_days_var.get()
+            self.chart_engine.create_price_forecast_chart(days_ahead=days)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to create Price Forecast:\n{str(e)}")
+    
+    def show_ma_forecast(self):
+        """Show Moving Average Forecast chart"""
+        try:
+            days = self.forecast_days_var.get()
+            self.chart_engine.create_ma_forecast_chart(days_ahead=days)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to create MA Forecast:\n{str(e)}")
+    
+    def show_arima_forecast(self):
+        """Show ARIMA Forecast chart"""
+        try:
+            days = self.forecast_days_var.get()
+            self.chart_engine.create_arima_forecast_chart(days_ahead=days)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to create ARIMA Forecast:\n{str(e)}")
+    
+    def show_prophet_forecast(self):
+        """Show Prophet Forecast chart"""
+        try:
+            days = self.forecast_days_var.get()
+            self.chart_engine.create_prophet_forecast_chart(days_ahead=days)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to create Prophet Forecast:\n{str(e)}")
+    
+    def show_forecast_comparison(self):
+        """Show comparison of all forecast methods"""
+        try:
+            days = self.forecast_days_var.get()
+            self.chart_engine.create_forecast_comparison_chart(days_ahead=days)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to create Forecast Comparison:\n{str(e)}")
+    
+    def _set_custom_forecast_days(self):
+        """Set custom forecast days from entry"""
+        try:
+            days = int(self.custom_days_entry.get())
+            if 1 <= days <= 180:
+                self.forecast_days_var.set(days)
+                self.log(f"✓ Forecast horizon set to {days} days")
+            else:
+                messagebox.showwarning("Invalid Input", "Please enter a value between 1 and 180 days")
+        except ValueError:
+            messagebox.showwarning("Invalid Input", "Please enter a valid number")
+    
     def show_seasonality(self):
         """Show Seasonality chart"""
         try:
@@ -567,6 +705,13 @@ class CSVVisualizerGUI:
             self.chart_engine.create_correlation_heatmap()
         except Exception as e:
             messagebox.showerror("Error", f"Failed to create Heatmap:\n{str(e)}")
+    
+    def show_calendar_heatmap(self):
+        """Show Calendar Heatmap"""
+        try:
+            self.chart_engine.create_calendar_heatmap()
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to create Calendar Heatmap:\n{str(e)}")
 
 
 def main():

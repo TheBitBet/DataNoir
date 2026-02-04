@@ -1,56 +1,48 @@
-# CSV Advanced Visualizer - Modular Architecture
+# DataNoir -  Data Visualizer & Forecasting 
 
-Fight against enshittifcation. DataNoir is a modular Python application for financial data visualization with **smart CSV import** that works with any column format. 
+**Version:** 3.0 - Comprehensive Forecasting Edition  
+**Platform:** Python 3.10+ with Tkinter  
+**Status:** Need tester
 
+---
 
-## Project Structure
+## Overview
 
-```
-csv_visualizer/
-├── main.py                    # GUI application (entry point)
-├── data_processor.py          # Data loading & calculations
-├── chart_engine.py            # Visualization & chart rendering
-├── csv_config.py              # Flexible CSV configuration system
-├── column_mapper_dialog.py    # Interactive column mapping GUI
-├── csv_configs.json           # User's saved presets (auto-created)
-└── README.md                  # This file
-```
+**DataNoir** is a financial data analysis tool featuring 16 visualizations and 5 forecasting methods. 
+---
 
-## Architecture
+##  Key Features
 
-### **main.py** - GUI Layer
-- **Responsibility**: User interface, file dialogs, logging, event handling
-- **Key Classes**: `CSVVisualizerGUI`
-- **Dependencies**: `tkinter`, `data_processor`, `chart_engine`
-- **What it does**:
-  - Creates and manages the GUI
-  - Handles file upload events
-  - Coordinates between data processor and chart engine
-  - Manages application state and logging
+### ** 16 Visualization Types**
 
-### **data_processor.py** - Data Layer
-- **Responsibility**: Data loading, parsing, transformations, calculations
-- **Key Classes**: `DataProcessor`
-- **Dependencies**: `pandas`, `numpy`
-- **What it does**:
-  - Loads and parses CSV files
-  - Validates data structure
-  - Calculates technical indicators (MA, RSI, Bollinger Bands, etc.)
-  - Provides clean data access methods
-  - Returns statistics and summaries
+**Basic Charts (4):**
+- 3D Visualization (Date × Volume × Price)
+- Basic 2D Charts (4-panel analysis)
+- Price Change % (Daily + Cumulative)
+- Volume Profile (Distribution by price level)
 
-### **chart_engine.py** - Visualization Layer
-- **Responsibility**: Chart creation and rendering
-- **Key Classes**: `ChartEngine`
-- **Dependencies**: `matplotlib`, `mpl_toolkits`, `numpy`
-- **What it does**:
-  - Creates 3D visualizations
-  - Generates 2D charts
-  - Renders technical analysis charts
-  - Handles all matplotlib plotting logic
+**Technical Indicators (3):**
+- Moving Averages + Bollinger Bands
+- RSI (Relative Strength Index)
+- MACD (Moving Average Convergence Divergence)
 
- ## Flexible CSV Import**
-### **1. Auto-Detection (Smart Column Matching)**
+**Advanced Analysis (3):**
+- Seasonality Analysis (5 sub-charts)
+- Correlation Heatmap (7-variable matrix)
+- Calendar Heatmap (Daily returns calendar)
+
+**Forecasting Suite (5):**
+-  **Price Forecast** - 3 methods comparison
+-  **MA Forecast** - Moving average projections
+-  **ARIMA** - Statistical time series model
+-  **Prophet** - Facebook's ML forecasting
+-  **Compare All** - Side-by-side consensus
+
+**Settings (1):**
+- 3D Visualization customization
+
+### Flexible CSV Import**
+- **1. Auto-Detection (Smart Column Matching)**
 When you upload a CSV, the system automatically tries to detect columns:
 
 ```python
@@ -63,15 +55,24 @@ Volume: 'volume', 'vol', 'vol.', 'quantity', 'trading_volume'
  If all required columns are detected → **Loads automatically!**  
  If some columns can't be detected → **Opens mapping dialog**
 
-### **2. Interactive Column Mapper**
+- **2. Interactive Column Mapper**
 GUI lets you:
 - See all CSV columns with data previews
 - Map required fields (Date, Price, Volume)
 - Map optional fields (Open, High, Low, Change)
+- Get smart suggestions for each field
 - Preview your mapped data before confirming
 - Save your mapping as a preset for future use
 
-### **Saved Configurations**
+- **3. Preset Configurations**
+Built-in presets for common sources:
+- Yahoo Finance
+- Investing.com
+- Google Finance
+- Generic
+
+
+- **Saved Configurations**
 Custom presets are saved in `csv_configs.json`:
 ```json
 {
@@ -82,9 +83,58 @@ Custom presets are saved in `csv_configs.json`:
   }
 }
 ```
+---
 
+##  Quick Start
 
-## Data Flow
+### **Installation**
+
+```bash
+# Core dependencies
+pip install pandas matplotlib numpy --break-system-packages
+
+# Forecasting (optional but recommended)
+pip install statsmodels prophet --break-system-packages
+```
+
+### **Launch**
+
+```bash
+python main.py
+```
+
+### **Usage**
+1. Click **"Upload CSV"**
+2. Select your financial data file
+3. Choose a visualization category
+4. Click any chart button
+
+---
+
+##  CSV Format
+
+### **Auto-Detection**
+DataNoir automatically detects column formats from:
+- Yahoo Finance
+- Investing.com
+- Google Finance
+- Custom formats (with mapper dialog)
+
+### **Required Columns**
+- **Date** (any date format)
+- **Price/Close** (numeric)
+- **Volume** (supports K/M/B suffixes)
+
+### **Optional Columns**
+- Open, High, Low, Change %
+
+### **Example CSV**
+```csv
+Date,Price,Volume
+2024-01-01,45000.50,2.5M
+2024-01-02,45200.00,3.1M
+```
+## 🔄 Data Flow
 
 ```
 User Action (Upload CSV)
@@ -104,92 +154,154 @@ chart_engine.py (Create Chart using data_processor)
 Display Chart to User
 ```
 
-##  Usage
+##  Forecasting Guide
 
-### Running the Application
-```python
-python main.py
-```
+### **Adjustable Horizon**
+- **Presets:** 1 Week, 2 Weeks, 1 Month, 2 Months, 3 Months
+- **Custom:** 1-180 days (enter manually)
 
-## 📊 Available Visualizations
+### **Method Comparison**
 
-1. **3D Chart** - Date × Volume × Price (with scaling options)
-2. **Basic 2D Charts** - Price/Volume over time, distributions
-3. **Moving Averages** - 7/30/90-day MA + Bollinger Bands
-4. **RSI** - Relative Strength Index with overbought/oversold zones
-5. **Price Change %** - Daily changes and cumulative returns
-6. **Volume Profile** - Volume distribution across price levels
-7. **MACD** - 
-8. **Seasonality** -
-
-##  Technical Indicators
-
-### Implemented:
-- Simple Moving Average (SMA)
-- Bollinger Bands
-- Relative Strength Index (RSI)
-- Price Change %
-- Cumulative Returns
-- Volume Profile & Point of Control (POC)
-
-### Easy to Add:
-Thanks to the modular design, new indicators can be added to `data_processor.py` as methods, then visualized in `chart_engine.py`.
-
-##  Dependencies
-
-```
-pandas>=1.3.0
-matplotlib>=3.4.0
-numpy>=1.21.0
-```
-
-Install with:
-```bash
-pip install pandas matplotlib numpy
-```
-
-##  Extending the Application
-
-### Adding a New Indicator:
-
-1. **Add calculation to `data_processor.py`:**
-```python
-def calculate_macd(self, fast=12, slow=26, signal=9):
-    # Your calculation logic
-    return macd_line, signal_line, histogram
-```
-
-2. **Add visualization to `chart_engine.py`:**
-```python
-def create_macd_chart(self):
-    macd, signal, hist = self.data_processor.calculate_macd()
-    # Your plotting logic
-```
-
-3. **Add button to `main.py`:**
-```python
-btn = tk.Button(text="MACD", command=self.show_macd)
-```
-
-### Adding a New Chart Type:
-
-Simply add a new method to `ChartEngine` and wire it to a button in the GUI!
-
-
-##  Notes
-- Charts support various color schemes based on price/volume/date
-- All technical indicators use standard financial formulas
-- 3d section need further refinement
-
-##  Contributing
-
-When adding new features:
-1. Put calculations in `data_processor.py`
-2. Put visualizations in `chart_engine.py`
-3. Put UI elements in `main.py`
-4. Keep the separation clean!
+| Method | Best For | Speed | Accuracy | Confidence Intervals |
+|--------|----------|-------|----------|---------------------|
+| **Linear Trend** | Short-term, clear trends | ⚡⚡⚡ | ⭐⭐ | ✅ |
+| **Moving Average** | Trading signals | ⚡⚡⚡ | ⭐⭐⭐ | ❌ |
+| **ARIMA** | Statistical analysis | ⚡⚡ | ⭐⭐⭐⭐ | ✅ |
+| **Prophet** | Long-term, seasonality | ⚡ | ⭐⭐⭐⭐⭐ | ✅ |
 
 ---
 
-**Python**: 3.10+  
-**License**: MIT
+## Chart Details
+
+### **3D Visualization**
+- Configurable scale (Linear/Log/Normalized)
+- Color by Price/Volume/Date
+- Adjustable point size
+- Interactive rotation
+
+### **ARIMA Forecast**
+- Auto-selects optimal parameters
+- Shows model fit quality
+- 95% confidence intervals
+- AIC score reporting
+
+### **Prophet Forecast**
+- ML-powered predictions
+- Automatic seasonality detection
+- Trend decomposition
+- Component visualization
+
+### **Correlation Heatmap**
+- 7 variables analyzed
+- Color-coded matrix (-1 to +1)
+- Strongest correlations highlighted
+- Scatter plots with trend lines
+
+### **Calendar Heatmap**
+- Visual daily returns
+- Multi-year support
+- Green = gains, Red = losses
+- Intensity shows magnitude
+
+---
+
+## 🔧 Technical Details
+
+### **Architecture**
+- **main.py** - GUI & user interface
+- **data_processor.py** - Data loading & calculations
+- **chart_engine.py** - Visualization engine
+- **csv_config.py** - Column detection & mapping
+- **column_mapper_dialog.py** - Interactive mapper
+
+---
+
+## Troubleshooting
+
+### **"statsmodels/Prophet not installed"**
+```bash
+pip install statsmodels --break-system-packages
+pip install prophet --break-system-packages
+```
+
+### **Buttons not visible**
+- Drag the divider up to show more buttons
+- Resize window larger
+- Check if CSV loaded successfully
+
+### **Charts not opening**
+- Check Activity Log for errors
+- Ensure data has enough records (30+ for Prophet, 60+ for ARIMA)
+- Verify date column is properly formatted
+
+### **CSV won't load**
+- Use the Column Mapper dialog
+- Check for proper date format
+- Remove header rows if any
+
+---
+
+## 📈 Performance Tips
+
+### **Large Datasets (10,000+ rows)**
+- Use Basic 2D Charts for quick overview
+- ARIMA may take  up to 30 seconds
+- Prophet may take up to 60 seconds
+- Consider shorter forecast horizons
+
+### **Small Datasets (<100 rows)**
+- Prophet may not work well
+- Use Linear Trend or MA Forecast
+- ARIMA needs minimum 60 points
+
+---
+
+
+## Privacy & Data
+
+- **100% Local** - No data sent to servers
+- **No API calls** - Works offline
+- **No tracking** - Your data stays private
+- **No account** - No login required
+
+---
+
+### **Issues**
+- Check Activity Log for detailed errors
+- Verify CSV format
+- Ensure libraries are installed
+- Try smaller forecast horizons
+
+
+
+## 🎉 Credits
+
+**DataNoir** - Professional Financial Analysis Suite  
+Built with Python, Tkinter, Matplotlib, Pandas, Statsmodels, Prophet
+
+**Key Technologies:**
+- Python 3.10+
+- Matplotlib (visualization)
+- Pandas (data processing)
+- Statsmodels (ARIMA)
+- Prophet (ML forecasting)
+- Tkinter (GUI)
+
+---
+
+## 📄 License
+
+This is an analysis tool. Use at your own risk. Not financial advice. 
+
+The MIT License (MIT)
+Copyright © 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+---
+
